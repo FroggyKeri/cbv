@@ -40,25 +40,26 @@ void error(char *err)
     fprintf(stderr, "%s\n", err);
 }
 
-void printLines(FILE *file, int start, int end)// Core function to print Lines from start to end
-{ 
-    if(file == NULL){
-        printf("AAAAAAAAAAAAAAAAAAAAAAAA");
-    }
-    char lineBuffer[MAX_LINE]; //array to save the current line to
-    int currentLine = start; //iterator for line were currently at
-    while (fgets(lineBuffer, MAX_LINE, file) != NULL) //ersetze mit fseek damit wir nicht durchs ganze file müssen?
+void printLines(FILE *file, int start, int end) // Core function to print Lines from start to end
+{
+    if (file == NULL)
     {
-        if (currentLine <= end)
+        error("Error opening File");
+    }
+    char lineBuffer[MAX_LINE];                        // array to save the current line to
+    int currentLine = 1;                              // iterator for line were currently at
+    while (fgets(lineBuffer, MAX_LINE, file) != NULL) // ersetze mit fseek damit wir nicht durchs ganze file müssen?
+    {
+        if (currentLine >= start && currentLine <= end)
         {
             printf("%s", lineBuffer);
         }
-        else
+        else if (currentLine > end)
         {
             break;
         }
         currentLine++;
-        printf("%d", currentLine);
+        // printf("%d", currentLine);
     }
 }
 
@@ -73,7 +74,15 @@ int main(int argc, char *argv[])
     int end = -1;
     char *filename = NULL;
 
-    for (int i = 1; i < argc; i++)
+    FILE *testFile = fopen("album.txt", "r");
+
+    if (argc == 2)
+    { // check if we have enough arguments, if not print help
+        printHelp();
+        return 0;
+    }
+
+    for (int i = 1; i < argc - 1; i++)
     {
         if (strcmp(argv[i], "--help") == 0)
         {
@@ -107,11 +116,9 @@ int main(int argc, char *argv[])
                 error("-e benötigt ein Argument");
             }
         }
-        else
-        {
-            filename = argv[argc];
-        }
     }
+
+    filename = argv[argc];
 
     if (filename == NULL || strcmp(filename, "-") == 0)
     {
@@ -126,7 +133,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    printLines(file, start, end);
+    // printLines(file, start, end);
+    // printLines(testFile, 1, 5);
+    // printHelp();
+    // printf("%d", argc);
 
     if (file != stdin)
     {
