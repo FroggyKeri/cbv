@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define MAX_LINE 2000
+#define VER "1.1"
 
 void printHelp()
 { // Print Help to CLI
@@ -32,12 +33,20 @@ void printHelp()
 void printVersion()
 { // Print Version
 
-    printf("cvb version 1.0\n");
+    printf("cvb version VER\n");
+}
+
+void printVerbose(){
+
 }
 
 void error(char *err)
 { // Error Function to print to stderr
     fprintf(stderr, "%s\n", err);
+}
+
+void readFileQuiet()
+{
 }
 
 void printLines(FILE *file, int start, int end) // Core function to print Lines from start to end
@@ -63,9 +72,7 @@ void printLines(FILE *file, int start, int end) // Core function to print Lines 
     }
 }
 
-void readFileQuiet()
-{
-}
+
 
 int main(int argc, char *argv[])
 {
@@ -76,7 +83,7 @@ int main(int argc, char *argv[])
 
     FILE *testFile = fopen("album.txt", "r");
 
-    if (argc <= 2)
+    if (argc < 2)
     { // check if we have enough arguments, if not print help
         error("Not enough arguments, use --help for syntax");
         return 0;
@@ -116,6 +123,10 @@ int main(int argc, char *argv[])
                 error("-e benötigt ein Argument");
             }
         }
+        else if (strcmp(argv[i], "-v") == 0){
+
+
+        }
     }
 
     filename = argv[argc];
@@ -133,7 +144,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    // printLines(file, start, end);
+    printLines(file, start, end);
     // printLines(testFile, 1, 5);
     // printHelp();
     // printf("%d", argc);
