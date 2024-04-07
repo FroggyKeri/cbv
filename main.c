@@ -76,9 +76,9 @@ int main(int argc, char *argv[])
 
     FILE *testFile = fopen("album.txt", "r");
 
-    if (argc == 2)
+    if (argc <= 2)
     { // check if we have enough arguments, if not print help
-        printHelp();
+        error("Not enough arguments, use --help for syntax");
         return 0;
     }
 
