@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define MAX_LINE 2000
-#define VER "1.1"
+#define VER "1.2"
 
 void printHelp()
 { // Print Help to CLI
@@ -33,20 +33,33 @@ void printHelp()
 void printVersion()
 { // Print Version
 
-    printf("cvb version VER\n");
+    printf("cvb version %s\n", VER);
 }
 
-void printVerbose(){
-
+void printVerbose(char *filename, int start, int end)
+{ // Print Verbose Information
+    printVersion();
+    if (filename != NULL)
+    {
+        printf("Reading From: %s\n", filename);
+    }
+    else
+    {
+        printf("Reading From: stdin\n");
+    }
 }
+
+void printQuiet(char *filename, int start, int end)
+{ // Print Verbose Information
+    printVerbose(filename, start, end);
+    printf("Quiet Mode, omitting output\n");
+}
+
+
 
 void error(char *err)
 { // Error Function to print to stderr
     fprintf(stderr, "%s\n", err);
-}
-
-void readFileQuiet()
-{
 }
 
 void printLines(FILE *file, int start, int end) // Core function to print Lines from start to end
@@ -72,8 +85,6 @@ void printLines(FILE *file, int start, int end) // Core function to print Lines 
     }
 }
 
-
-
 int main(int argc, char *argv[])
 {
     FILE *file;
@@ -81,7 +92,7 @@ int main(int argc, char *argv[])
     int end = -1;
     char *filename = NULL;
 
-    FILE *testFile = fopen("album.txt", "r");
+    // FILE *testFile = fopen("album.txt", "r");
 
     if (argc < 2)
     { // check if we have enough arguments, if not print help
@@ -89,7 +100,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    for (int i = 1; i < argc - 1; i++)
+    for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "--help") == 0)
         {
@@ -106,6 +117,7 @@ int main(int argc, char *argv[])
             if (i + 1 < argc)
             {
                 start = strtol(argv[i + 1], NULL, 10);
+                i++;
             }
             else
             {
@@ -117,19 +129,27 @@ int main(int argc, char *argv[])
             if (i + 1 < argc)
             {
                 end = strtol(argv[i + 1], NULL, 10);
+                i++;
             }
             else
             {
                 error("-e benötigt ein Argument");
             }
         }
-        else if (strcmp(argv[i], "-v") == 0){
-
-
+        else if (strcmp(argv[i], "-v") == 0)
+        {
+            printVerbose(filename, start, end);
+        }
+        else if (strcmp(argv[i], "-q") == 0)
+        {
+            printQuiet(filename, start, end);
+            return 0;
+        }
+        else
+        {
+            filename = argv[i];
         }
     }
-
-    filename = argv[argc];
 
     if (filename == NULL || strcmp(filename, "-") == 0)
     {
@@ -146,8 +166,8 @@ int main(int argc, char *argv[])
 
     printLines(file, start, end);
     // printLines(testFile, 1, 5);
-    // printHelp();
-    // printf("%d", argc);
+    //  printHelp();
+    //  printf("%d", argc);
 
     if (file != stdin)
     {
