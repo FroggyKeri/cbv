@@ -50,7 +50,7 @@ void printVerbose(char *filename, int start, int end)
 }
 
 void printQuiet(char *filename, int start, int end)
-{ // Print Verbose Information
+{ // Print in quiet mode
     printVerbose(filename, start, end);
     printf("Quiet Mode, omitting output\n");
 }
@@ -70,109 +70,103 @@ void printLines(FILE *file, int start, int end) // Core function to print Lines 
     }
     char lineBuffer[MAX_LINE];                        // array to save the current line to
     int currentLine = 1;                              // iterator for line were currently at
-    while (fgets(lineBuffer, MAX_LINE, file) != NULL) // ersetze mit fseek damit wir nicht durchs ganze file müssen?
+    while (fgets(lineBuffer, MAX_LINE, file) != NULL) // read line by line
     {
-        if (currentLine >= start && currentLine <= end)
+        if (currentLine >= start && currentLine <= end) // check if we are in the range
         {
-            printf("%s", lineBuffer);
+            printf("%s", lineBuffer); // print the line
         }
-        else if (currentLine > end)
+        else if (currentLine > end) // if we are past the end, break
         {
             break;
         }
-        currentLine++;
-        // printf("%d", currentLine);
+        currentLine++; // increment the line counter
     }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[]) // Main Function
 {
-    FILE *file;
-    int start = 1;
-    int end = -1;
-    char *filename = NULL;
+    FILE *file; // main File Pointer
+    int start = 1; // start line
+    int end = -1; // end line
+    char *filename = NULL; // filename, set to NULL
 
-    // FILE *testFile = fopen("album.txt", "r");
-
-    if (argc < 2)
-    { // check if we have enough arguments, if not print help
+    if (argc < 2) // check if we have enough arguments, if not print help
+    { 
         error("Not enough arguments, use --help for syntax");
         return 0;
     }
 
-    for (int i = 1; i < argc; i++)
+    for (int i = 1; i < argc; i++) // iterate over the arguments
     {
-        if (strcmp(argv[i], "--help") == 0)
+        if (strcmp(argv[i], "--help") == 0) // check if we have the help argument
         {
             printHelp();
             return 0;
         }
-        else if (strcmp(argv[i], "--version") == 0)
+        else if (strcmp(argv[i], "--version") == 0) // check if we have the version argument
         {
             printVersion();
             return 0;
         }
-        else if (strcmp(argv[i], "-s") == 0)
+        else if (strcmp(argv[i], "-s") == 0) // check if we have the start argument
         {
             if (i + 1 < argc)
             {
-                start = strtol(argv[i + 1], NULL, 10);
-                i++;
+                start = strtol(argv[i + 1], NULL, 10); // convert the argument to a number
+                i++; // increment the iterator to skip the number in the next iteration
             }
-            else
+            else // print error if we dont have an argument
             {
-                error("-s benötigt ein Argument");
+                error("-s benötigt ein Argument"); 
             }
         }
-        else if (strcmp(argv[i], "-e") == 0)
+        else if (strcmp(argv[i], "-e") == 0) // check if we have the end argument
         {
-            if (i + 1 < argc)
+            if (i + 1 < argc) // check if we have an argument
             {
-                end = strtol(argv[i + 1], NULL, 10);
-                i++;
+                end = strtol(argv[i + 1], NULL, 10); // convert the argument to a number
+                i++; // increment the iterator to skip the number in the next iteration
             }
-            else
+            else // print error if we dont have an argument
             {
-                error("-e benötigt ein Argument");
+                error("-e benötigt ein Argument"); 
             }
         }
-        else if (strcmp(argv[i], "-v") == 0)
+        else if (strcmp(argv[i], "-v") == 0) // check if we have the verbose argument
         {
-            printVerbose(filename, start, end);
+            printVerbose(filename, start, end); // print verbose information
         }
-        else if (strcmp(argv[i], "-q") == 0)
+        else if (strcmp(argv[i], "-q") == 0) // check if we have the quiet argument
         {
-            printQuiet(filename, start, end);
-            return 0;
+            printQuiet(filename, start, end); // print quiet information
+            return 0; // end the program so we omit the output
         }
-        else
+        else // if none of the above, set the filename
         {
             filename = argv[i];
         }
     }
 
-    if (filename == NULL || strcmp(filename, "-") == 0)
+    if (filename == NULL || strcmp(filename, "-") == 0) // if we dont have a filename or the filename is "-", set the file to stdin
     {
-        file = stdin;
+        file = stdin; 
     }
-    else
+    else // if we have a filename, open the file
     {
-        file = fopen(filename, "r");
+        file = fopen(filename, "r"); 
         if (file == NULL)
         {
             error("Fehler beim Öffnen der Datei.");
         }
     }
 
-    printLines(file, start, end);
-    // printLines(testFile, 1, 5);
-    //  printHelp();
-    //  printf("%d", argc);
+    printLines(file, start, end); // print the lines
 
-    if (file != stdin)
+    if (file != stdin) // close the file if its not stdin
     {
         fclose(file);
     }
 
-    return 0;
+    return 0; // end the program
 }
